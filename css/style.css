@@ -1,0 +1,401 @@
+/* ==========================================================================
+   Denim Tracker — Invoice Generator
+   style.css — all screen + print styling
+   --------------------------------------------------------------------------
+   Sections:
+     1. Design tokens & base
+     2. Toolbar (screen-only controls)
+     3. Invoice sheet
+     4. Header
+     5. Buyer / bill meta
+     6. Items table
+     7. Bank details + totals
+     8. Footer
+     9. Editable-element affordances
+    10. Print rules
+   ========================================================================== */
+
+/* ---------- 1. Design tokens & base ---------- */
+
+/* Oswald — local variable font shipped with the project (assets/fonts/,
+   OFL licence). Covers weights 200-700, so bold text uses a REAL bold face
+   instead of the blurry synthetic bold a single-weight font would get. */
+@font-face {
+  font-family: "Oswald";
+  src: url("../assets/fonts/Oswald-Variable.ttf") format("truetype");
+  font-weight: 200 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --ink: #1a1a1a;               /* main border / text colour            */
+  --navy: #17365d;              /* brand blue used for company name     */
+  --paper: #ffffff;
+  --page-bg: #d9dde2;
+  --border-heavy: 3px solid var(--ink);
+  --border-std: 2px solid var(--ink);
+  --font-invoice: "Oswald", "Arial Narrow", "Franklin Gothic Medium", "Segoe UI", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 24px 12px 60px;
+  background: var(--page-bg);
+  font-family: var(--font-invoice);
+  color: var(--ink);
+}
+
+/* ---------- 2. Toolbar (screen-only controls) ---------- */
+.toolbar {
+  max-width: 820px;
+  margin: 0 auto 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.toolbar button {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid #2c3e50;
+  border-radius: 4px;
+  background: #2c3e50;
+  color: #fff;
+  cursor: pointer;
+}
+
+.toolbar button:hover { background: #3d5166; }
+
+.toolbar button.danger {
+  background: #fff;
+  color: #b02a2a;
+  border-color: #b02a2a;
+}
+
+.toolbar button.danger:hover { background: #fbeaea; }
+
+.toolbar .hint {
+  flex-basis: 100%;
+  font-size: 12px;
+  color: #555;
+}
+
+/* ---------- 3. Invoice sheet ---------- */
+.invoice {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 26px 28px 22px;
+  background: var(--paper);
+  font-weight: 700;
+}
+
+/* ---------- 4. Header (one full-width changeable image) ---------- */
+.inv-header .header-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.header-bar {
+  height: 0px;
+  background: transparent;
+  margin: 8px 0 10px;
+}
+
+/* ---------- 5. Buyer / bill meta ---------- */
+.bill-to {
+  display: flex;
+  border: var(--border-heavy);
+}
+
+.bill-to__buyer {
+  flex: 1 1 auto;
+  padding: 8px 12px;
+  border-right: var(--border-std);
+}
+
+.buyer-name { margin: 0 0 4px; font-size: 18px; }
+
+.buyer-name .label { margin-right: 6px; }
+
+.buyer-address {
+  margin: 0 0 4px;
+  font-size: 13px;
+  white-space: pre-line;
+}
+
+.buyer-gstin { margin: 0; font-size: 15px; }
+
+.bill-to__meta {
+  flex: 0 0 250px;
+  display: flex;
+  flex-direction: column;
+}
+
+.meta-row {
+  flex: 1 1 50%;
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  font-size: 28px;
+}
+
+.meta-row + .meta-row { border-top: var(--border-std); }
+
+.meta-label { margin-right: 10px; }
+
+.meta-value { flex: 1 1 auto; }
+
+/* ---------- 6. Items table ---------- */
+.items-table {
+  width: 100%;
+  margin-top: 10px;
+  border-collapse: collapse;
+  border: var(--border-heavy);
+}
+
+/* Column widths */
+.items-table .w-no     { width: 8%; }
+.items-table .w-part   { width: 44%; }
+.items-table .w-qty    { width: 14%; }
+.items-table .w-rate   { width: 14%; }
+.items-table .w-amount { width: 20%; }
+
+.items-table th {
+  padding: 6px 8px;
+  font-size: 20px;
+  border-right: var(--border-std);
+  border-bottom: var(--border-std);
+}
+
+.items-table th:last-child,
+.items-table td:last-child { border-right: none; }
+
+.amount-head .rs-ps {
+  display: flex;
+  justify-content: space-around;
+  font-size: 11px;
+  font-weight: 700;
+}
+.items-table td {
+  height: 34px;
+  padding: 0 8px;
+  font-size: 24px;
+  border-right: var(--border-std);
+  border-bottom: var(--border-std);
+  vertical-align: middle;
+}
+
+.items-table tbody tr:last-child td { border-bottom: none; }
+
+.items-table .col-no { text-align: center; }
+
+.items-table .col-amount {
+  position: relative;
+  text-align: center;
+}
+
+/* Inputs blend into the table so the sheet looks like the paper original */
+.row-input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-weight: 700;
+  color: inherit;
+  padding: 4px 0;
+  outline: none;
+  text-align: center;
+}
+
+.row-input.num { text-align: center; }
+
+/* Per-row delete button — appears on hover, never printed */
+.row-delete {
+  position: absolute;
+  right: -30px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 22px;
+  height: 22px;
+  border: 1px solid #b02a2a;
+  border-radius: 50%;
+  background: #fff;
+  color: #b02a2a;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.items-table tbody tr:hover .row-delete { opacity: 1; }
+
+/* ---------- 7. Bank details + totals ---------- */
+.inv-bottom {
+  display: flex;
+  border: var(--border-heavy);
+  border-top: none;
+}
+
+.bank-box {
+  flex: 1 1 52%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 12px;
+  border-right: var(--border-std);
+}
+
+.bank-logo {
+  height: 46px;
+  width: auto;
+  flex: 0 0 auto;
+}
+
+.bank-details {
+  font-size: 17px;
+  line-height: 1.45;
+  white-space: pre-line;
+}
+
+.totals { flex: 1 1 48%; }
+
+.totals-row {
+  display: flex;
+  align-items: center;
+}
+
+.totals-row + .totals-row { border-top: var(--border-std); }
+
+.totals-row .t-label {
+  flex: 1 1 auto;
+  padding: 5px 10px;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+.totals-row .t-value {
+  flex: 0 0 128px;
+  padding: 5px 10px;
+  font-size: 22px;
+  text-align: center;
+  border-left: var(--border-std);
+}
+
+.totals-row.grand .t-label { font-size: 15px; }
+
+.totals-row.grand .t-value { font-size: 22px; }
+
+.tax-rate { display: inline-block; min-width: 24px; text-align: center; }
+
+/* ---------- 8. Footer ---------- */
+.inv-footer {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-top: 8px;
+  padding-top: 6px;
+}
+
+.inv-footer .terms {
+  flex: 1 1 auto;
+  font-size: 11px;
+  line-height: 1.6;
+  white-space: pre-line;
+  text-transform: uppercase;
+}
+.invoice * {
+  letter-spacing: 1px;
+}
+.inv-footer .hsn {
+  flex: 0 0 auto;
+  font-size: 16px;
+  align-self: center;
+}
+
+.inv-footer .sign {
+  flex: 0 0 200px;
+  position: relative;
+  text-align: right;
+  padding-top: 14px;
+}
+
+.color-strip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 78px;
+  height: 8px;
+  background: linear-gradient(90deg,
+    #d81f26 0 20%, #f28c1e 20% 40%, #ffd400 40% 60%,
+    #1b9e4b 60% 80%, #1a57a5 80% 100%);
+}
+.sign-brand {
+  display: inline-block;
+  color: var(--navy);
+  font-size: 18px;
+  line-height: 1.1;
+  text-align: left;
+  white-space: pre-line;
+  text-transform: uppercase;
+}
+
+/* ---------- 9. Editable-element affordances (screen only) ---------- */
+[contenteditable] {
+  outline: none;
+  border-radius: 2px;
+}
+
+[contenteditable]:hover { background: #fff7d6; }
+
+[contenteditable]:focus { background: #fff1b0; }
+
+img.changeable { cursor: pointer; }
+
+img.changeable:hover { outline: 2px dashed #2c7be5; outline-offset: 2px; }
+
+/* While html2pdf captures the sheet (Download PDF), hide screen-only bits */
+body.exporting-pdf .row-delete { display: none; }
+
+body.exporting-pdf .invoice { box-shadow: none; }
+
+/* ---------- 10. Print rules ---------- */
+@page {
+  size: A4;
+  margin: 8mm;
+}
+
+@media print {
+  body { padding: 0; background: #fff; }
+
+  .no-print,
+  .row-delete { display: none !important; }
+
+  /* Keep the exact screen layout (820px) — script.js applies a computed
+     `zoom` on #invoice before printing so the whole sheet always lands on
+     ONE A4 page. */
+  .invoice {
+    width: 820px;
+    max-width: none;
+    margin: 0;
+    box-shadow: none;
+  }
+
+  [contenteditable]:hover,
+  [contenteditable]:focus { background: transparent; }
+
+  img.changeable:hover { outline: none; }
+
+  /* Force the solid black bars and colour strip to actually print */
+  .header-bar,
+  .color-strip {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
